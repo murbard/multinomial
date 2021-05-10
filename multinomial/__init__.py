@@ -3,6 +3,12 @@ from random import randint
 
 # Return n chooses k, can (and should be) cached
 def binomial(n, k):
+    """
+    Computes n chooses k
+    :param n: number of items to choose from
+    :param k: number of items chosen
+    :return: n chooses k
+    """
     if 2 * k > n:
         return binomial(n, n - k)
     if k < 0 or k > n:
@@ -17,7 +23,7 @@ def int_sqrt(n):
     """
     Computes the closest integer to the square root of n
     :param n: integer whose square root is being taken
-    :return: the cloest integer to the square root of n
+    :return: the closest integer to the square root of n
     """
     s0 = 1
     s1 = n
@@ -62,7 +68,6 @@ def sample_binomial(n):
             return n + i
 
 
-
 def sample_binomial_p(n, p, q):
     """
     Samples from a binomial distribution with a probability parameter p/q.
@@ -91,7 +96,7 @@ def sample_multinomial_p(n, rs):
     """
     total = sum(rs)
     result = []
-    for r in rs: # Draw the multinomial by factoring the distribution into binomials
+    for r in rs:  # Draw the multinomial by factoring the distribution into binomials
         b = sample_binomial_p(n, r, total)
         result.append(b)
         n -= b
