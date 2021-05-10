@@ -42,8 +42,6 @@ def sample_binomial(n):
     :param n:
     :return:
     """
-    if n < 0:
-        print('wut?')
     if n == 0:
         return 0
     if n % 2 == 1:  # if n is odd, reduce to the even case
