@@ -1,4 +1,3 @@
-from math import sqrt  # only used in an assertion, there is no floating point arithmetic in this file
 from random import randint
 
 
@@ -52,8 +51,6 @@ def sample_binomial(n):
     n //= 2
     # Sample from "2n" using rejection sampling
     m = int_sqrt(2 * n) + 1
-    assert (m >= sqrt(2 * n))
-    assert (m <= sqrt(2 * n) + 3)
     while True:
         sign = 2 * sample_bernoulli() - 1
         k = 0

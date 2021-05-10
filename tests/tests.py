@@ -22,6 +22,10 @@ class TestMultinomial(unittest.TestCase):
             self.assertLess(sqrt(n) - 1, s)
             self.assertLess(s, sqrt(n) + 1)
 
+            m = int_sqrt(2 * n) + 1
+            self.assertGreaterEqual(m, sqrt(2 * n))
+            self.assertLessEqual(m, sqrt(2 * n) + 3)
+
     def sample_binomial_tester(self, n, N):
         k = [sample_binomial(n) for _ in range(0, N)]
         if n == 0:
