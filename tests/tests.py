@@ -1,12 +1,16 @@
 import unittest
 from collections import Counter
 from math import sqrt
-
 import scipy.stats
-import numpy as np
-
 from multinomial import binomial, int_sqrt, sample_binomial, sample_binomial_p, sample_multinomial_p
 
+def get_tuples(length, total):
+    if length == 1:
+        yield (total,)
+        return
+    for i in range(total + 1):
+        for t in get_tuples(length - 1, total - i):
+            yield (i,) + t
 
 class TestMultinomial(unittest.TestCase):
 
@@ -28,11 +32,11 @@ class TestMultinomial(unittest.TestCase):
 
     def sample_binomial_tester(self, n, N):
         k = [sample_binomial(n) for _ in range(0, N)]
+        c = Counter(k)
         if n == 0:
-            self.assertTrue(np.all(np.array(k) == 0))
+            self.assertEqual(c, Counter({0:N}))
             return
         pmf = scipy.stats.binom(n=n, p=0.5).pmf
-        c = Counter(k)
         test = scipy.stats.chisquare([c[i] / N for i in range(0, n + 1)], [pmf(i) for i in range(0, n + 1)])
         self.assertGreater(test.pvalue, 0.001)  # yes this is not very sound
 
@@ -55,23 +59,19 @@ class TestMultinomial(unittest.TestCase):
         self.sample_binomial_p_tester(103, 2000, 1, 100)
         self.sample_binomial_p_tester(103, 2000, 99, 100)
 
+
     def sample_multinomial_p_tester(self, n, N, rs):
         k = [tuple(sample_multinomial_p(n, rs)) for i in range(0, N)]
         s = sum(rs)
         p = [r / s for r in rs]
         pmf = scipy.stats.multinomial(n, p).pmf
         c = Counter(k)
-        events = list(np.ndindex(tuple([n + 1 for _ in range(len(rs))])))  # all possible draws
-        empirical = np.array([c[e] / N for e in events])
-        theoretical = np.array([pmf(e) for e in events])
-        positive = np.where(empirical * theoretical > 0)
-        empirical = empirical[positive]
-        theoretical = theoretical[positive]
-        test = scipy.stats.chisquare(empirical, theoretical)
+        events = list(get_tuples(len(rs), n))
+        test = scipy.stats.chisquare([c[e] / N for e in events], [pmf(e) for e in events])
         self.assertGreater(test.pvalue, 0.001)  # yes this is not very sound
 
     def test_sample_multinomial_p(self):
-        self.sample_multinomial_p_tester(5, 2000, [14, 5, 7])
+        self.sample_multinomial_p_tester(10, 2000, [14, 5, 7])
 
 
 if __name__ == '__main__':
